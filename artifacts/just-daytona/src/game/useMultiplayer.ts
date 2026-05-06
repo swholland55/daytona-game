@@ -197,8 +197,11 @@ export function useMultiplayer() {
         return;
       }
       wsRef.current?.close();
-      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const ws = new WebSocket(`${proto}//${window.location.host}/api/ws`);
+      const backendUrl = import.meta.env.VITE_BACKEND_URL as string | undefined;
+      const wsUrl = backendUrl
+        ? backendUrl.replace(/^http/, 'ws') + '/api/ws'
+        : (window.location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + window.location.host + '/api/ws';
+      const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
       ws.onopen = () => resolve(ws);
       ws.onerror = () => reject(new Error('Cannot connect to server'));
