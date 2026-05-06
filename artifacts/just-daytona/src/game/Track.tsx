@@ -57,12 +57,32 @@ function buildOuterWallGeo() {
   );
 }
 
-// ── Inner concrete retaining wall ─────────────────────────────────────────
+// ── Inner concrete retaining wall — skips front-straight pit entry zone ───
+// Gap covers |z| < 92 on positive-x side (t < 0.83 and t > 5.45)
 function buildInnerWallGeo() {
-  return buildRibbon(
-    (t) => [TRACK.innerA * Math.cos(t), 0, -TRACK.innerB * Math.sin(t)],
-    (t) => [TRACK.innerA * Math.cos(t), WALL_H, -TRACK.innerB * Math.sin(t)],
-  );
+  const GAP = 0.83; // radians — sin⁻¹(92/125)
+  const pos: number[] = [];
+  const idx: number[] = [];
+  // Build two arcs: back half + turns, leaving the front straight open
+  const arcs: [number, number][] = [[GAP, Math.PI * 2 - GAP]];
+  for (const [tStart, tEnd] of arcs) {
+    const arcSegs = Math.round(SEGS * (tEnd - tStart) / (Math.PI * 2));
+    const base = pos.length / 3;
+    for (let i = 0; i <= arcSegs; i++) {
+      const t = tStart + (i / arcSegs) * (tEnd - tStart);
+      const ix = TRACK.innerA * Math.cos(t), iz = -TRACK.innerB * Math.sin(t);
+      pos.push(ix, 0, iz, ix, WALL_H, iz);
+    }
+    for (let i = 0; i < arcSegs; i++) {
+      const a = base + i * 2, b = a + 1, c = a + 2, d = a + 3;
+      idx.push(a, c, b, b, c, d);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
 }
 
 // ── White outer edge stripe (at base of SAFER barrier) ────────────────────

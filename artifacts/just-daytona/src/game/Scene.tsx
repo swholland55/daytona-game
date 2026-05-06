@@ -149,12 +149,9 @@ function resolveWallCollision(car: CarState, skipInner = false): boolean {
     return true;
   }
 
-  // Pit road gates — open the inner wall on the front-straight side across the whole pit z corridor.
-  // Only gated on x > 0 (positive/right side of oval) so the gate stays active all the way
-  // into the infield and doesn't close mid-transit when x drops below a fixed threshold.
-  const inPitGate = car.x > 0 && (
-    (car.z > 18 && car.z < 75) || (car.z > -75 && car.z < -18)
-  );
+  // Pit road: open the inner wall for the entire front-straight region.
+  // Matches the visual gap in the inner wall mesh (|z| < 92, positive-x side).
+  const inPitGate = car.x > 0 && Math.abs(car.z) < 92;
 
   if (!skipInner && !inPitGate) {
     const innerVal = (car.x / TRACK.innerA) ** 2 + (car.z / TRACK.innerB) ** 2;
@@ -708,13 +705,13 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
     // Pit stop — race mode only, drive into pit road (inside front straight) to repair
     if (gameMode === 'race' && !raceOverRef.current) {
       // Inner concrete pit wall — hard stop at x=192, front-straight side only (positive x)
-      if (player.x > 0 && player.x < 192 && Math.abs(player.z) < 75) {
+      if (player.x > 0 && player.x < 192 && Math.abs(player.z) < 92) {
         player.x = 192;
         const vx = Math.sin(player.heading) * player.speed;
         if (vx < 0) player.speed *= 0.3;
       }
       // Speed limiter for the entire pit lane corridor
-      const inPitLane = player.x < 234 && player.x > 190 && Math.abs(player.z) < 75;
+      const inPitLane = player.x < 252 && player.x > 190 && Math.abs(player.z) < 92;
       if (inPitLane) player.speed = Math.min(player.speed, 25);
       // Pit stall zone — hold here to receive service
       const inPit = player.x > 193 && player.x < 232 && Math.abs(player.z) < 38;

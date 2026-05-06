@@ -9,19 +9,22 @@ export function getBankHeight(t: number): number {
   return 1.5 + 22.5 * s * s; // ~3° straights, ~25° banked corners
 }
 
-// Get the visual Y elevation for a car at (x, z) based on track banking
+// Get the visual Y elevation for a car at (x, z) based on track banking.
+// Normalise by centerB/centerA before atan2 so the angle matches the ribbon
+// segment in asymmetric corners (plain atan2(-z,x) diverges from the segment
+// angle when innerB/outerB ≠ innerA/outerA, causing the car to float).
 export function getCarBankY(x: number, z: number): number {
-  const t = Math.atan2(-z, x);
+  const t = Math.atan2(-z / TRACK.centerB, x / TRACK.centerA);
   const maxBankH = getBankHeight(t);
-  // Lateral position: 0 = inner wall, 1 = outer wall
-  const ra = TRACK.innerA / TRACK.outerA;
-  const rb = TRACK.innerB / TRACK.outerB;
-  const ct = Math.cos(t);
-  const st = Math.sin(t);
-  const innerNorm = Math.sqrt(ra * ra * ct * ct + rb * rb * st * st);
-  const outerNorm = Math.sqrt((x / TRACK.outerA) ** 2 + (z / TRACK.outerB) ** 2);
-  const lateralFrac = Math.max(0, Math.min(1, (outerNorm - innerNorm) / (1 - innerNorm)));
-  return lateralFrac * maxBankH;
+  const ct = Math.cos(t), st = Math.sin(t);
+  const innerX = TRACK.innerA * ct, innerZ = -TRACK.innerB * st;
+  const outerX = TRACK.outerA * ct, outerZ = -TRACK.outerB * st;
+  const rdx = outerX - innerX, rdz = outerZ - innerZ;
+  const lenSq = rdx * rdx + rdz * rdz;
+  const s = lenSq > 0
+    ? Math.max(0, Math.min(1, ((x - innerX) * rdx + (z - innerZ) * rdz) / lenSq))
+    : 0;
+  return s * maxBankH;
 }
 
 // Track path: (a*cos(t), -b*sin(t)) — counterclockwise NASCAR direction
