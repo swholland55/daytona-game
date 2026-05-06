@@ -1,0 +1,38 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "MQAv0hGOvafFbC1wwigr6"
+uri = "file://artifacts/just-daytona/src/assets/hero-bg.png"
+type = "image"
+title = "Stock cars motion blur"
+
+[[generated]]
+id = "2FuPxb9SKRi4ZXsYTk55J"
+uri = "file://artifacts/just-daytona/src/assets/crash.png"
+type = "image"
+title = "Stock car pileup crash"
+
+[[generated]]
+id = "hRM6fymbOEDGS6TrjY5Kj"
+uri = "file://artifacts/just-daytona/src/assets/drafting.png"
+type = "image"
+title = "Cars drafting high speed"
+
+[[generated]]
+id = "bRESZV5QLbVVNNMXQdVVL"
+uri = "file://artifacts/just-daytona/src/assets/track-banking.png"
+type = "image"
+title = "High banking track corner"
+
+[[generated]]
+id = "wC5uIjGcIfhrtbJ3PiFjb"
+uri = "file://artifacts/just-daytona/src/assets/tire-marks.png"
+type = "image"
+title = "Burnt rubber tire texture"
+
+[[generated]]
+id = "hSWi9JVpLR1FzZxehO-42"
+uri = "file://artifacts/just-daytona/src/assets/garage.png"
+type = "image"
+title = "Stock car garage garage"

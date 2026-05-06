@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "just-daytona",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "export PATH=\"/opt/homebrew/opt/node@24/bin:$PATH\" && cd artifacts/api-server && PORT=3001 node --enable-source-maps ./dist/index.mjs & cd ../just-daytona && PORT=5173 BASE_PATH=/ pnpm run dev"],
+      "port": 5173
+    }
+  ]
+}

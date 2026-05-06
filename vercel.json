@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm --filter @workspace/just-daytona build",
+  "outputDirectory": "artifacts/just-daytona/dist/public",
+  "installCommand": "pnpm install",
+  "framework": "vite"
+}
