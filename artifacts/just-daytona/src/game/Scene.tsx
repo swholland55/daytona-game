@@ -243,6 +243,7 @@ interface SceneProps {
   carNumber?: number;
   carColor?: string;
   botPunishmentQueuesRef?: { current: string[][] };
+  initialBotCount?: number;
 }
 
 function CarNumberSprite({ number, color }: { number: number; color: string }) {
@@ -270,12 +271,13 @@ function CarNumberSprite({ number, color }: { number: number; color: string }) {
   );
 }
 
-export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, teleportQueueRef, playerPosRef, pendingHostTeleportRef, onPositionUpdate, spawnBotRef, remotePlayerNames, totalLaps = 0, vehicleType = 'car', gameMode = 'race', carNumber, carColor, botPunishmentQueuesRef }: SceneProps) {
+export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, teleportQueueRef, playerPosRef, pendingHostTeleportRef, onPositionUpdate, spawnBotRef, remotePlayerNames, totalLaps = 0, vehicleType = 'car', gameMode = 'race', carNumber, carColor, botPunishmentQueuesRef, initialBotCount }: SceneProps) {
+  const startBotCount = initialBotCount ?? AI_COUNT;
   const carsRef = useRef<CarState[]>(initCars());
   carsRef.current[0].color = carColor ?? carsRef.current[0].color;
   const carGroupRefs = useRef<(THREE.Group | null)[]>(Array(1 + MAX_BOTS).fill(null));
-  const activeCarCountRef = useRef(1 + AI_COUNT);
-  const [renderCarCount, setRenderCarCount] = useState(1 + AI_COUNT);
+  const activeCarCountRef = useRef(1 + startBotCount);
+  const [renderCarCount, setRenderCarCount] = useState(1 + startBotCount);
   const lastSpawnRef = useRef(0);
   const [, getKeys] = useKeyboardControls<Controls>();
   const uiTimer = useRef(0);

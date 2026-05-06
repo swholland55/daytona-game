@@ -15,6 +15,7 @@ interface Room {
   hostId: string;
   players: Map<string, RoomPlayer>;
   totalLaps: number;
+  started: boolean;
 }
 
 const rooms = new Map<string, Room>();
@@ -68,7 +69,7 @@ export function setupWebSocketServer(httpServer: Server) {
         handleLeave();
         const passcode = ((msg.passcode as string) || randomUUID().slice(0, 6))
           .toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) || randomUUID().slice(0, 6).toUpperCase();
-        const room: Room = { passcode, hostId: clientId, players: new Map(), totalLaps: Math.max(1, Math.min(100, (msg.totalLaps as number) || 10)) };
+        const room: Room = { passcode, hostId: clientId, players: new Map(), totalLaps: Math.max(1, Math.min(100, (msg.totalLaps as number) || 10)), started: false };
         const player: RoomPlayer = {
           ws, id: clientId, carIndex: 0,
           name: (msg.name as string) || 'DRIVER',
@@ -167,6 +168,16 @@ export function setupWebSocketServer(httpServer: Server) {
         if (!text) return;
         const payload = { type: 'chatMessage', fromId: clientId, fromCarIndex: currentPlayer.carIndex, fromName: currentPlayer.name, text };
         for (const p of currentRoom.players.values()) sendTo(p.ws, payload);
+
+      } else if (msg.type === 'startRace') {
+        if (!currentRoom || currentRoom.hostId !== clientId || currentRoom.started) return;
+        currentRoom.started = true;
+        const botCount = Math.max(0, Math.min(9, Number(msg.botCount) || 0));
+        const gameMode = String(msg.gameMode || 'race');
+        const vehicleType = String(msg.vehicleType || 'car');
+        for (const p of currentRoom.players.values()) {
+          sendTo(p.ws, { type: 'raceStarted', totalLaps: currentRoom.totalLaps, botCount, gameMode, vehicleType });
+        }
 
       } else if (msg.type === 'leave') {
         handleLeave();

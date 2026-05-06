@@ -5,13 +5,14 @@ import { Scene } from './Scene';
 import { GameUI } from './GameUI';
 import { MultiplayerPanel } from './MultiplayerPanel';
 import { LapSelectScreen } from './LapSelectScreen';
+import { LobbyScreen } from './LobbyScreen';
 import { ResultsScreen } from './ResultsScreen';
 import { useMultiplayer } from './useMultiplayer';
 import { KEY_MAP, AI_COUNT, MAX_BOTS, CAR_NAMES, CAR_COLORS } from './constants';
 import { UiState, VehicleType, GameMode, ChatMessage } from './types';
 import { ChatPanel } from './ChatPanel';
 
-type AppPhase = 'menu' | 'racing' | 'finished';
+type AppPhase = 'menu' | 'lobby' | 'racing' | 'finished';
 
 export function Game() {
   const [uiState, setUiState] = useState<UiState>({ speed: 0, laps: 0, position: 1, countdown: 3.99 });
@@ -46,9 +47,11 @@ export function Game() {
 
   const {
     mode, passcode, playerCount, error, alert, remoteTotalLaps, isRaining,
-    chatMessages, playerList, remotePlayersRef, punishmentQueueRef, teleportQueueRef,
-    createRoom, joinRoom, leaveRoom, sendUpdate, adminAction, sendGlobalAction, sendTeleportAll, sendChatMessage,
+    chatMessages, playerList, raceSettings, remotePlayersRef, punishmentQueueRef, teleportQueueRef,
+    createRoom, joinRoom, leaveRoom, sendUpdate, sendStartRace, adminAction, sendGlobalAction, sendTeleportAll, sendChatMessage,
   } = useMultiplayer();
+
+  const initialBotCountRef = useRef<number | undefined>(undefined);
 
   const handleSendChat = useCallback((text: string) => {
     sendChatMessage(text, playerName || 'DRIVER', carColor);
@@ -69,20 +72,25 @@ export function Game() {
     color: CAR_COLORS[(i + 1) % CAR_COLORS.length],
   }));
 
-  // When room created/joined → auto-start race
-  const remoteTotalLapsRef = useRef<number | undefined>(undefined);
-  useEffect(() => { remoteTotalLapsRef.current = remoteTotalLaps; }, [remoteTotalLaps]);
-
+  // When room created/joined → go to lobby
   useEffect(() => {
     if (phase !== 'menu') return;
-    if (mode === 'hosting') {
-      setPhase('racing');
-    } else if (mode === 'joined') {
-      const rl = remoteTotalLapsRef.current;
-      if (rl !== undefined) setTotalLaps(rl);
-      setPhase('racing');
+    if (mode === 'hosting' || mode === 'joined') {
+      setPhase('lobby');
     }
   }, [mode, phase]);
+
+  // When server broadcasts raceStarted → apply settings and begin race
+  useEffect(() => {
+    if (!raceSettings || phase !== 'lobby') return;
+    setTotalLaps(raceSettings.totalLaps);
+    setGameMode(raceSettings.gameMode as typeof gameMode);
+    setVehicleType(raceSettings.vehicleType as typeof vehicleType);
+    initialBotCountRef.current = raceSettings.botCount;
+    setBotCount(raceSettings.botCount);
+    spawnBotRef.current = 0;
+    setPhase('racing');
+  }, [raceSettings, phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Race finish → show results after brief delay
   const finishHandled = useRef(false);
@@ -107,10 +115,15 @@ export function Game() {
     setUiState({ speed: 0, laps: 0, position: 1, countdown: 3.99 });
     spawnBotRef.current = 0;
     setBotCount(AI_COUNT);
+    initialBotCountRef.current = undefined;
     setPhase('menu');
   }
 
   const isInGame = phase === 'racing' || phase === 'finished';
+
+  function handleStartRace(botCount: number) {
+    sendStartRace(botCount, gameMode, vehicleType);
+  }
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#000', overflow: 'hidden' }}>
@@ -138,6 +151,21 @@ export function Game() {
         />
       )}
 
+      {/* Multiplayer lobby */}
+      {phase === 'lobby' && (
+        <LobbyScreen
+          isHost={mode === 'hosting'}
+          passcode={passcode}
+          playerCount={playerCount}
+          playerList={playerList}
+          totalLaps={totalLaps}
+          gameMode={gameMode}
+          vehicleType={vehicleType}
+          onStartRace={handleStartRace}
+          onLeave={() => { leaveRoom(); setPhase('menu'); }}
+        />
+      )}
+
       {/* 3-D game canvas */}
       {isInGame && (
         <KeyboardControls map={KEY_MAP}>
@@ -152,6 +180,7 @@ export function Game() {
               totalLaps={totalLaps}
               vehicleType={vehicleType}
               gameMode={gameMode}
+              initialBotCount={initialBotCountRef.current}
               carNumber={carNumber}
               carColor={carColor}
               remotePlayersRef={remotePlayersRef}

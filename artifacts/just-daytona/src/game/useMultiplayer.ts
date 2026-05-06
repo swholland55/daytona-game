@@ -19,6 +19,13 @@ export interface PlayerInfo {
 
 export type MultiplayerMode = 'offline' | 'hosting' | 'joined';
 
+export interface RaceSettings {
+  totalLaps: number;
+  botCount: number;
+  gameMode: string;
+  vehicleType: string;
+}
+
 interface MultiplayerState {
   mode: MultiplayerMode;
   passcode: string;
@@ -56,6 +63,7 @@ export function useMultiplayer() {
   const [remoteTotalLaps, setRemoteTotalLaps] = useState<number | undefined>(undefined);
   const [isRaining, setIsRaining] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [raceSettings, setRaceSettings] = useState<RaceSettings | null>(null);
   const remotePlayersRef = useRef<RemotePlayerState[]>([]);
   const punishmentQueueRef = useRef<string[]>([]);
   const teleportQueueRef = useRef<Array<{ x: number; z: number; heading: number }>>([]);
@@ -184,6 +192,15 @@ export function useMultiplayer() {
         showAlert(msg.message as string);
         break;
 
+      case 'raceStarted':
+        setRaceSettings({
+          totalLaps: msg.totalLaps as number,
+          botCount: msg.botCount as number,
+          gameMode: msg.gameMode as string,
+          vehicleType: msg.vehicleType as string,
+        });
+        break;
+
       case 'error':
         setState(s => ({ ...s, error: msg.message as string }));
         break;
@@ -211,6 +228,7 @@ export function useMultiplayer() {
         punishmentQueueRef.current = [];
         setPlayerList([]);
         setRemoteTotalLaps(undefined);
+        setRaceSettings(null);
         setState({ mode: 'offline', passcode: '', playerCount: 1, error: '', alert: null });
       };
     });
@@ -245,7 +263,15 @@ export function useMultiplayer() {
     punishmentQueueRef.current = [];
     setPlayerList([]);
     setRemoteTotalLaps(undefined);
+    setRaceSettings(null);
     setState({ mode: 'offline', passcode: '', playerCount: 1, error: '', alert: null });
+  }, []);
+
+  const sendStartRace = useCallback((botCount: number, gameMode: string, vehicleType: string) => {
+    const ws = wsRef.current;
+    if (ws?.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'startRace', botCount, gameMode, vehicleType }));
+    }
   }, []);
 
   const sendUpdate = useCallback((x: number, z: number, heading: number, speed: number, braking: boolean, laps: number) => {
@@ -304,9 +330,10 @@ export function useMultiplayer() {
     isRaining,
     chatMessages,
     playerList,
+    raceSettings,
     remotePlayersRef,
     punishmentQueueRef,
     teleportQueueRef,
-    createRoom, joinRoom, leaveRoom, sendUpdate, adminAction, sendGlobalAction, sendTeleportAll, sendChatMessage,
+    createRoom, joinRoom, leaveRoom, sendUpdate, sendStartRace, adminAction, sendGlobalAction, sendTeleportAll, sendChatMessage,
   };
 }
