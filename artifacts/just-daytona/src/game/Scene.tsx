@@ -705,8 +705,8 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
 
     // Pit stop — race mode only, drive into pit road (inside front straight) to repair
     if (gameMode === 'race' && !raceOverRef.current) {
-      // Inner concrete pit wall — hard stop at x=192 so cars don't drive into the infield
-      if (player.x < 192 && Math.abs(player.z) < 60) {
+      // Inner concrete pit wall — hard stop at x=192, front-straight side only (positive x)
+      if (player.x > 0 && player.x < 192 && Math.abs(player.z) < 60) {
         player.x = 192;
         const vx = Math.sin(player.heading) * player.speed;
         if (vx < 0) player.speed *= 0.3;
