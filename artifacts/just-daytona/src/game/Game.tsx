@@ -11,6 +11,7 @@ import { useMultiplayer } from './useMultiplayer';
 import { KEY_MAP, AI_COUNT, MAX_BOTS, CAR_NAMES, CAR_COLORS } from './constants';
 import { UiState, VehicleType, GameMode, ChatMessage } from './types';
 import { ChatPanel } from './ChatPanel';
+import { useRaceMusic } from './useRaceMusic';
 
 type AppPhase = 'menu' | 'lobby' | 'racing' | 'finished';
 
@@ -18,6 +19,13 @@ export function Game() {
   const [uiState, setUiState] = useState<UiState>({ speed: 0, laps: 0, position: 1, countdown: 3.99 });
   const [phase, setPhase] = useState<AppPhase>('menu');
   const [totalLaps, setTotalLaps] = useState(10);
+
+  const { start: startMusic, stop: stopMusic, toggleMute } = useRaceMusic();
+  const [musicMuted, setMusicMuted] = useState(false);
+  useEffect(() => {
+    if (phase === 'racing') startMusic();
+    else stopMusic();
+  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [vehicleType, setVehicleType] = useState<VehicleType>('car');
   const [gameMode, setGameMode] = useState<GameMode>('race');
@@ -244,6 +252,29 @@ export function Game() {
           wrongWay={uiState.wrongWay}
           pitStopTimer={uiState.pitStopTimer}
         />
+      )}
+
+      {/* Music mute toggle */}
+      {phase === 'racing' && (
+        <button
+          onClick={() => setMusicMuted(toggleMute())}
+          style={{
+            position: 'fixed', bottom: 14, left: 14,
+            background: 'rgba(0,0,0,0.65)',
+            border: '1px solid rgba(255,255,255,0.25)',
+            borderRadius: 6,
+            color: '#fff',
+            fontFamily: '"Arial Narrow", Arial, sans-serif',
+            fontWeight: 700,
+            fontSize: 12,
+            letterSpacing: 1,
+            padding: '5px 10px',
+            cursor: 'pointer',
+            zIndex: 300,
+          }}
+        >
+          {musicMuted ? 'MUSIC OFF' : 'MUSIC ON'}
+        </button>
       )}
 
       {/* Post-race results */}
