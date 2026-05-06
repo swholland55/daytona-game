@@ -184,7 +184,6 @@ export function Game() {
       {isInGame && (
         <KeyboardControls map={KEY_MAP}>
           <Canvas
-            shadows
             camera={{ position: [295, 16, 32], fov: 72, near: 0.5, far: 2200 }}
             gl={{ antialias: true }}
             style={{ width: '100%', height: '100%' }}

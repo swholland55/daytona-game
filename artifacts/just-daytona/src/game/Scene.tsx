@@ -1463,19 +1463,9 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
 
       <ambientLight intensity={rainActive ? 0.28 : 0.55} color={rainActive ? '#8898aa' : '#ffe4c0'} />
       <directionalLight
-        castShadow
         position={[200, 280, 120]}
         intensity={rainActive ? 0.4 : 1.6}
         color={rainActive ? '#aabbcc' : '#fff5e0'}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-near={10}
-        shadow-camera-far={1000}
-        shadow-camera-left={-360}
-        shadow-camera-right={360}
-        shadow-camera-top={220}
-        shadow-camera-bottom={-220}
-        shadow-bias={-0.0008}
       />
       <hemisphereLight args={[rainActive ? '#3a5060' : '#c9e4ff', rainActive ? '#1a2a1a' : '#3a6e3a', 0.55]} />
 
