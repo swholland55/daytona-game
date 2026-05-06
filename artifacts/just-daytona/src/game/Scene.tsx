@@ -856,10 +856,32 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
       }
     }
 
-    // Car-car collisions
+    // Car-car collisions (local bots)
     for (let i = 0; i < activeCarCountRef.current; i++) {
       for (let j = i + 1; j < activeCarCountRef.current; j++) {
         resolveCarCollision(cars[i], cars[j]);
+      }
+    }
+
+    // Collision with remote (networked) players — one-sided: only local player is pushed
+    if (remotePlayersRef) {
+      for (const remote of remotePlayersRef.current) {
+        const dx = remote.x - player.x;
+        const dz = remote.z - player.z;
+        const distSq = dx * dx + dz * dz;
+        if (distSq < CRASH_DISTANCE * CRASH_DISTANCE && distSq > 0.0001) {
+          const dist = Math.sqrt(distSq);
+          const nx = dx / dist;
+          const nz = dz / dist;
+          player.x -= nx * (CRASH_DISTANCE - dist);
+          player.z -= nz * (CRASH_DISTANCE - dist);
+          const relSpeed = Math.abs(player.speed - remote.speed);
+          const impact = 0.42 + relSpeed * 0.014;
+          player.speed *= (1 - impact);
+          const spinDir = nz >= 0 ? 1 : -1;
+          player.angularVelocity = spinDir * (5.0 + relSpeed * 0.18);
+          resolveWallCollision(player);
+        }
       }
     }
 

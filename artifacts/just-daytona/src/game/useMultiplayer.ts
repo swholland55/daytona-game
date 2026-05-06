@@ -64,6 +64,7 @@ export function useMultiplayer() {
   const [isRaining, setIsRaining] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [raceSettings, setRaceSettings] = useState<RaceSettings | null>(null);
+  const [remoteBotSpawnCount, setRemoteBotSpawnCount] = useState(0);
   const remotePlayersRef = useRef<RemotePlayerState[]>([]);
   const punishmentQueueRef = useRef<string[]>([]);
   const teleportQueueRef = useRef<Array<{ x: number; z: number; heading: number }>>([]);
@@ -192,6 +193,10 @@ export function useMultiplayer() {
         showAlert(msg.message as string);
         break;
 
+      case 'botSpawned':
+        setRemoteBotSpawnCount(c => c + 1);
+        break;
+
       case 'raceStarted':
         setRaceSettings({
           totalLaps: msg.totalLaps as number,
@@ -267,6 +272,13 @@ export function useMultiplayer() {
     setState({ mode: 'offline', passcode: '', playerCount: 1, error: '', alert: null });
   }, []);
 
+  const sendSpawnBot = useCallback(() => {
+    const ws = wsRef.current;
+    if (ws?.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'spawnBot' }));
+    }
+  }, []);
+
   const sendStartRace = useCallback((botCount: number, gameMode: string, vehicleType: string) => {
     const ws = wsRef.current;
     if (ws?.readyState === WebSocket.OPEN) {
@@ -331,9 +343,10 @@ export function useMultiplayer() {
     chatMessages,
     playerList,
     raceSettings,
+    remoteBotSpawnCount,
     remotePlayersRef,
     punishmentQueueRef,
     teleportQueueRef,
-    createRoom, joinRoom, leaveRoom, sendUpdate, sendStartRace, adminAction, sendGlobalAction, sendTeleportAll, sendChatMessage,
+    createRoom, joinRoom, leaveRoom, sendUpdate, sendStartRace, sendSpawnBot, adminAction, sendGlobalAction, sendTeleportAll, sendChatMessage,
   };
 }

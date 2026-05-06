@@ -37,7 +37,21 @@ export function Game() {
     if (botCount >= MAX_BOTS) return;
     spawnBotRef.current++;
     setBotCount(c => c + 1);
+    if (mode !== 'offline') sendSpawnBot();
   }
+
+  // Apply bot spawns triggered by the host on other clients
+  const prevRemoteBotSpawnRef = useRef(0);
+  useEffect(() => {
+    const diff = remoteBotSpawnCount - prevRemoteBotSpawnRef.current;
+    if (diff <= 0) return;
+    prevRemoteBotSpawnRef.current = remoteBotSpawnCount;
+    setBotCount(c => {
+      const newCount = Math.min(MAX_BOTS, c + diff);
+      spawnBotRef.current += newCount - c;
+      return newCount;
+    });
+  }, [remoteBotSpawnCount]);
 
   const botPunishmentQueuesRef = useRef<string[][]>(Array.from({ length: MAX_BOTS }, () => []));
   const handleLocalBotAction = useCallback((botIdx: number, action: string) => {
@@ -47,8 +61,8 @@ export function Game() {
 
   const {
     mode, passcode, playerCount, error, alert, remoteTotalLaps, isRaining,
-    chatMessages, playerList, raceSettings, remotePlayersRef, punishmentQueueRef, teleportQueueRef,
-    createRoom, joinRoom, leaveRoom, sendUpdate, sendStartRace, adminAction, sendGlobalAction, sendTeleportAll, sendChatMessage,
+    chatMessages, playerList, raceSettings, remoteBotSpawnCount, remotePlayersRef, punishmentQueueRef, teleportQueueRef,
+    createRoom, joinRoom, leaveRoom, sendUpdate, sendStartRace, sendSpawnBot, adminAction, sendGlobalAction, sendTeleportAll, sendChatMessage,
   } = useMultiplayer();
 
   const initialBotCountRef = useRef<number | undefined>(undefined);

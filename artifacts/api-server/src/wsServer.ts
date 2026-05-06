@@ -169,6 +169,10 @@ export function setupWebSocketServer(httpServer: Server) {
         const payload = { type: 'chatMessage', fromId: clientId, fromCarIndex: currentPlayer.carIndex, fromName: currentPlayer.name, text };
         for (const p of currentRoom.players.values()) sendTo(p.ws, payload);
 
+      } else if (msg.type === 'spawnBot') {
+        if (!currentRoom || currentRoom.hostId !== clientId) return;
+        broadcast(currentRoom, { type: 'botSpawned' }, clientId);
+
       } else if (msg.type === 'startRace') {
         if (!currentRoom || currentRoom.hostId !== clientId || currentRoom.started) return;
         currentRoom.started = true;
