@@ -42,31 +42,31 @@ function NascarMesh({ color, braking = false, damage = 0 }: { color: string; bra
   const lean = damage * 0.22;
   return (
     <group scale={1.45} rotation={[0, 0, lean]}>
-      <mesh castShadow position={[0, 0.13, -2.42]}>
+      <mesh position={[0, 0.13, -2.42]}>
         <boxGeometry args={[1.22, 0.26, 0.28]} />
         <meshStandardMaterial color={color} metalness={0.45} roughness={0.26} />
       </mesh>
-      <mesh castShadow position={[0, 0.17, -2.16]}>
+      <meshposition={[0, 0.17, -2.16]}>
         <boxGeometry args={[1.52, 0.34, 0.42]} />
         <meshStandardMaterial color={color} metalness={0.45} roughness={0.26} />
       </mesh>
-      <mesh castShadow position={[0, 0.21, -1.88]}>
+      <meshposition={[0, 0.21, -1.88]}>
         <boxGeometry args={[1.78, 0.42, 0.44]} />
         <meshStandardMaterial color={color} metalness={0.45} roughness={0.26} />
       </mesh>
-      <mesh castShadow position={[0, 0.22, 0.25]}>
+      <meshposition={[0, 0.22, 0.25]}>
         <boxGeometry args={[1.92, 0.44, 4.05]} />
         <meshStandardMaterial color={color} metalness={0.45} roughness={0.26} />
       </mesh>
-      <mesh castShadow position={[1.1, 0.13, 0.25]}>
+      <meshposition={[1.1, 0.13, 0.25]}>
         <boxGeometry args={[0.17, 0.26, 4.6]} />
         <meshStandardMaterial color={dark} roughness={0.6} />
       </mesh>
-      <mesh castShadow position={[-1.1, 0.13, 0.25]}>
+      <meshposition={[-1.1, 0.13, 0.25]}>
         <boxGeometry args={[0.17, 0.26, 4.6]} />
         <meshStandardMaterial color={dark} roughness={0.6} />
       </mesh>
-      <mesh castShadow position={[0, 0.44, -0.88]} rotation={[0.05, 0, 0]}>
+      <meshposition={[0, 0.44, -0.88]} rotation={[0.05, 0, 0]}>
         <boxGeometry args={[1.82, 0.07, 1.88]} />
         <meshStandardMaterial color={color} metalness={0.45} roughness={0.26} />
       </mesh>
@@ -74,15 +74,15 @@ function NascarMesh({ color, braking = false, damage = 0 }: { color: string; bra
         <boxGeometry args={[0.46, 0.08, 0.72]} />
         <meshStandardMaterial color={dark} />
       </mesh>
-      <mesh castShadow position={[0, 0.46, 1.9]}>
+      <meshposition={[0, 0.46, 1.9]}>
         <boxGeometry args={[1.82, 0.07, 1.44]} />
         <meshStandardMaterial color={color} metalness={0.45} roughness={0.26} />
       </mesh>
-      <mesh castShadow position={[0, 0.72, 0.22]}>
+      <meshposition={[0, 0.72, 0.22]}>
         <boxGeometry args={[1.72, 0.28, 2.06]} />
         <meshStandardMaterial color={color} metalness={0.45} roughness={0.26} />
       </mesh>
-      <mesh castShadow position={[0, 1.02, 0.08]}>
+      <meshposition={[0, 1.02, 0.08]}>
         <boxGeometry args={[1.54, 0.1, 1.82]} />
         <meshStandardMaterial color={color} metalness={0.45} roughness={0.26} />
       </mesh>
@@ -116,11 +116,11 @@ function NascarMesh({ color, braking = false, damage = 0 }: { color: string; bra
         <boxGeometry args={[1.92, 0.06, 0.28]} />
         <meshStandardMaterial color={dark} roughness={0.75} />
       </mesh>
-      <mesh castShadow position={[0, 0.2, -2.46]}>
+      <meshposition={[0, 0.2, -2.46]}>
         <boxGeometry args={[1.68, 0.3, 0.1]} />
         <meshStandardMaterial color={color} metalness={0.45} roughness={0.26} />
       </mesh>
-      <mesh castShadow position={[0, 0.24, 2.47]}>
+      <meshposition={[0, 0.24, 2.47]}>
         <boxGeometry args={[1.8, 0.4, 0.1]} />
         <meshStandardMaterial color={color} metalness={0.45} roughness={0.26} />
       </mesh>
@@ -198,7 +198,7 @@ function TruckMesh({ color, braking = false, damage = 0 }: { color: string; brak
   return (
     <group scale={1.45} rotation={[0, 0, lean]}>
       {/* ─── MAIN LOWER BODY ─── */}
-      <mesh castShadow position={[0, 0.32, 0.1]}>
+      <meshposition={[0, 0.32, 0.1]}>
         <boxGeometry args={[2.05, 1.1, 3.6]} />
         <meshStandardMaterial color={color} metalness={0.35} roughness={0.35} />
       </mesh>
@@ -213,19 +213,19 @@ function TruckMesh({ color, braking = false, damage = 0 }: { color: string; brak
       </mesh>
 
       {/* ─── TRUCK CAB (front half) ─── */}
-      <mesh castShadow position={[0, 1.42, -0.55]}>
+      <meshposition={[0, 1.42, -0.55]}>
         <boxGeometry args={[1.94, 0.84, 2.1]} />
         <meshStandardMaterial color={color} metalness={0.35} roughness={0.35} />
       </mesh>
       {/* Roof */}
-      <mesh castShadow position={[0, 1.9, -0.55]}>
+      <meshposition={[0, 1.9, -0.55]}>
         <boxGeometry args={[1.84, 0.14, 1.92]} />
         <meshStandardMaterial color={color} metalness={0.35} roughness={0.35} />
       </mesh>
 
       {/* ─── FRONT / NOSE ─── */}
       {/* Blunt front face (trucks have upright front) */}
-      <mesh castShadow position={[0, 0.55, -2.12]}>
+      <meshposition={[0, 0.55, -2.12]}>
         <boxGeometry args={[2.0, 1.1, 0.18]} />
         <meshStandardMaterial color={color} metalness={0.35} roughness={0.35} />
       </mesh>
@@ -242,12 +242,12 @@ function TruckMesh({ color, braking = false, damage = 0 }: { color: string; brak
         </mesh>
       ))}
       {/* Front bumper */}
-      <mesh castShadow position={[0, 0.16, -2.16]}>
+      <meshposition={[0, 0.16, -2.16]}>
         <boxGeometry args={[2.0, 0.32, 0.22]} />
         <meshStandardMaterial color={dark} roughness={0.6} />
       </mesh>
       {/* Hood */}
-      <mesh castShadow position={[0, 0.92, -1.2]} rotation={[-0.04, 0, 0]}>
+      <meshposition={[0, 0.92, -1.2]} rotation={[-0.04, 0, 0]}>
         <boxGeometry args={[1.88, 0.1, 1.8]} />
         <meshStandardMaterial color={color} metalness={0.35} roughness={0.35} />
       </mesh>
@@ -286,27 +286,27 @@ function TruckMesh({ color, braking = false, damage = 0 }: { color: string; brak
 
       {/* ─── TRUCK BED (rear) ─── */}
       {/* Bed floor */}
-      <mesh castShadow position={[0, 0.62, 1.5]}>
+      <meshposition={[0, 0.62, 1.5]}>
         <boxGeometry args={[2.0, 0.1, 1.88]} />
         <meshStandardMaterial color={dark} roughness={0.8} />
       </mesh>
       {/* Bed left rail */}
-      <mesh castShadow position={[-1.02, 0.98, 1.5]}>
+      <meshposition={[-1.02, 0.98, 1.5]}>
         <boxGeometry args={[0.1, 0.62, 1.9]} />
         <meshStandardMaterial color={color} metalness={0.3} roughness={0.4} />
       </mesh>
       {/* Bed right rail */}
-      <mesh castShadow position={[1.02, 0.98, 1.5]}>
+      <meshposition={[1.02, 0.98, 1.5]}>
         <boxGeometry args={[0.1, 0.62, 1.9]} />
         <meshStandardMaterial color={color} metalness={0.3} roughness={0.4} />
       </mesh>
       {/* Tailgate */}
-      <mesh castShadow position={[0, 0.98, 2.42]}>
+      <meshposition={[0, 0.98, 2.42]}>
         <boxGeometry args={[2.0, 0.62, 0.12]} />
         <meshStandardMaterial color={color} metalness={0.3} roughness={0.4} />
       </mesh>
       {/* Rear bumper */}
-      <mesh castShadow position={[0, 0.18, 2.44]}>
+      <meshposition={[0, 0.18, 2.44]}>
         <boxGeometry args={[2.0, 0.36, 0.2]} />
         <meshStandardMaterial color={dark} roughness={0.7} />
       </mesh>
@@ -418,21 +418,21 @@ function F1Mesh({ color, braking = false, damage = 0 }: { color: string; braking
   return (
     <group scale={1.3} rotation={[0, 0, lean]}>
       {/* ─── CENTRAL MONOCOQUE (narrow torpedo) ─── */}
-      <mesh castShadow position={[0, 0.22, 0.0]}>
+      <meshposition={[0, 0.22, 0.0]}>
         <boxGeometry args={[0.88, 0.32, 4.6]} />
         <meshStandardMaterial color={color} metalness={0.55} roughness={0.2} />
       </mesh>
 
       {/* ─── NOSE CONE (long, pointed) ─── */}
-      <mesh castShadow position={[0, 0.18, -2.8]}>
+      <meshposition={[0, 0.18, -2.8]}>
         <boxGeometry args={[0.52, 0.18, 1.1]} />
         <meshStandardMaterial color={color} metalness={0.55} roughness={0.2} />
       </mesh>
-      <mesh castShadow position={[0, 0.14, -3.28]}>
+      <meshposition={[0, 0.14, -3.28]}>
         <boxGeometry args={[0.28, 0.1, 0.8]} />
         <meshStandardMaterial color={color} metalness={0.55} roughness={0.2} />
       </mesh>
-      <mesh castShadow position={[0, 0.11, -3.62]}>
+      <meshposition={[0, 0.11, -3.62]}>
         <boxGeometry args={[0.14, 0.07, 0.45]} />
         <meshStandardMaterial color={color} metalness={0.55} roughness={0.2} />
       </mesh>
@@ -468,11 +468,11 @@ function F1Mesh({ color, braking = false, damage = 0 }: { color: string; braking
       </mesh>
 
       {/* ─── SIDEPODS ─── */}
-      <mesh castShadow position={[0.7, 0.2, 0.3]}>
+      <meshposition={[0.7, 0.2, 0.3]}>
         <boxGeometry args={[0.46, 0.3, 2.4]} />
         <meshStandardMaterial color={color} metalness={0.55} roughness={0.2} />
       </mesh>
-      <mesh castShadow position={[-0.7, 0.2, 0.3]}>
+      <meshposition={[-0.7, 0.2, 0.3]}>
         <boxGeometry args={[0.46, 0.3, 2.4]} />
         <meshStandardMaterial color={color} metalness={0.55} roughness={0.2} />
       </mesh>
@@ -488,7 +488,7 @@ function F1Mesh({ color, braking = false, damage = 0 }: { color: string; braking
 
       {/* ─── OPEN COCKPIT AREA ─── */}
       {/* Cockpit surround / survival cell */}
-      <mesh castShadow position={[0, 0.44, -0.4]}>
+      <meshposition={[0, 0.44, -0.4]}>
         <boxGeometry args={[0.7, 0.2, 0.9]} />
         <meshStandardMaterial color={color} metalness={0.55} roughness={0.2} />
       </mesh>
@@ -508,7 +508,7 @@ function F1Mesh({ color, braking = false, damage = 0 }: { color: string; braking
         <meshStandardMaterial color={carbon} metalness={0.7} roughness={0.3} />
       </mesh>
       {/* Roll hoop */}
-      <mesh castShadow position={[0, 0.72, 0.28]}>
+      <meshposition={[0, 0.72, 0.28]}>
         <boxGeometry args={[0.42, 0.56, 0.16]} />
         <meshStandardMaterial color={color} metalness={0.55} roughness={0.2} />
       </mesh>
@@ -524,7 +524,7 @@ function F1Mesh({ color, braking = false, damage = 0 }: { color: string; braking
       </mesh>
 
       {/* ─── REAR BODY ─── */}
-      <mesh castShadow position={[0, 0.18, 1.8]}>
+      <meshposition={[0, 0.18, 1.8]}>
         <boxGeometry args={[0.72, 0.22, 1.5]} />
         <meshStandardMaterial color={color} metalness={0.55} roughness={0.2} />
       </mesh>

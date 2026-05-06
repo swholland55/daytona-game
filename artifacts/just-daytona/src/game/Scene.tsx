@@ -711,7 +711,7 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
         if (vx < 0) player.speed *= 0.3;
       }
       // Speed limiter for the entire pit lane corridor
-      const inPitLane = player.x < 252 && player.x > 190 && Math.abs(player.z) < 92;
+      const inPitLane = player.x > 0 && Math.abs(player.z) < 92 && (player.x / TRACK.innerA) ** 2 + (player.z / TRACK.innerB) ** 2 < 1;
       if (inPitLane) player.speed = Math.min(player.speed, 25);
       // Pit stall zone — hold here to receive service
       const inPit = player.x > 193 && player.x < 232 && Math.abs(player.z) < 38;
@@ -1567,7 +1567,6 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
           ref={(el) => { carGroupRefs.current[i] = el; }}
           position={[car.x, 0, car.z]}
           rotation={[0, car.heading + Math.PI, 0]}
-          castShadow
         >
           <CarMesh color={car.color} braking={i === 0 && car.braking} damage={car.damage} vehicleType={vehicleType} />
           {i === 0 && carNumber !== undefined && (
