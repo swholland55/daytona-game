@@ -903,9 +903,9 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
     // Detect sudden angular velocity spike (wall/car collision) → camera shake
     {
       const avDelta = Math.abs(player.angularVelocity) - Math.abs(prevAngVelRef.current);
-      if (avDelta > 2.0) shakeRef.current = Math.min(0.7, avDelta * 0.07);
+      if (avDelta > 3.0) shakeRef.current = Math.min(0.22, avDelta * 0.022);
       prevAngVelRef.current = player.angularVelocity;
-      shakeRef.current = Math.max(0, shakeRef.current - dt * 3.5);
+      shakeRef.current = Math.max(0, shakeRef.current - dt * 5.0);
     }
 
     // ── Game mode logic ──────────────────────────────────────────────────────
@@ -1340,9 +1340,9 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
     // Camera shake on collision
     if (shakeRef.current > 0) {
       const s = shakeRef.current;
-      camera.position.x += (Math.random() - 0.5) * s * 1.5;
-      camera.position.y += Math.random() * s * 0.3;
-      camera.position.z += (Math.random() - 0.5) * s * 1.5;
+      camera.position.x += (Math.random() - 0.5) * s * 0.6;
+      camera.position.y += Math.random() * s * 0.12;
+      camera.position.z += (Math.random() - 0.5) * s * 0.6;
     }
 
     // Send local player position to multiplayer server (throttled to ~20 Hz)

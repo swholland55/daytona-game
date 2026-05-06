@@ -9,19 +9,25 @@ export function getBankHeight(t: number): number {
   return 1.5 + 22.5 * s * s; // ~3° straights, ~25° banked corners
 }
 
-// Get the visual Y elevation for a car at (x, z) based on track banking
+// Get the visual Y elevation for a car at (x, z) based on track banking.
+// Uses the nearest waypoint angle so the lateral fraction is projected correctly
+// along the actual ribbon radial direction — avoids floating artefacts in corners
+// where atan2 of the car's world position diverges from the ribbon segment angle.
 export function getCarBankY(x: number, z: number): number {
-  const t = Math.atan2(-z, x);
+  const wpIdx = getNearestWaypointIdx(x, z);
+  const t = (wpIdx / NUM_WAYPOINTS) * Math.PI * 2;
   const maxBankH = getBankHeight(t);
-  // Lateral position: 0 = inner wall, 1 = outer wall
-  const ra = TRACK.innerA / TRACK.outerA;
-  const rb = TRACK.innerB / TRACK.outerB;
-  const ct = Math.cos(t);
-  const st = Math.sin(t);
-  const innerNorm = Math.sqrt(ra * ra * ct * ct + rb * rb * st * st);
-  const outerNorm = Math.sqrt((x / TRACK.outerA) ** 2 + (z / TRACK.outerB) ** 2);
-  const lateralFrac = Math.max(0, Math.min(1, (outerNorm - innerNorm) / (1 - innerNorm)));
-  return lateralFrac * maxBankH;
+  const ct = Math.cos(t), st = Math.sin(t);
+  // Ribbon endpoints at this angle
+  const innerX = TRACK.innerA * ct, innerZ = -TRACK.innerB * st;
+  const outerX = TRACK.outerA * ct, outerZ = -TRACK.outerB * st;
+  const rdx = outerX - innerX, rdz = outerZ - innerZ;
+  const lenSq = rdx * rdx + rdz * rdz;
+  // Project car onto the radial direction to get true lateral fraction
+  const s = lenSq > 0
+    ? Math.max(0, Math.min(1, ((x - innerX) * rdx + (z - innerZ) * rdz) / lenSq))
+    : 0;
+  return s * maxBankH;
 }
 
 // Track path: (a*cos(t), -b*sin(t)) — counterclockwise NASCAR direction
