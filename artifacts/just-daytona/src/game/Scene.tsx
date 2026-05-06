@@ -149,8 +149,10 @@ function resolveWallCollision(car: CarState, skipInner = false): boolean {
     return true;
   }
 
-  // Pit road gates — wide openings in the inner wall for entry/exit to pit lane
-  const inPitGate = car.x > 190 && car.x < 258 && (
+  // Pit road gates — open the inner wall on the front-straight side across the whole pit z corridor.
+  // Only gated on x > 0 (positive/right side of oval) so the gate stays active all the way
+  // into the infield and doesn't close mid-transit when x drops below a fixed threshold.
+  const inPitGate = car.x > 0 && (
     (car.z > 18 && car.z < 75) || (car.z > -75 && car.z < -18)
   );
 
