@@ -31,6 +31,12 @@ export function Game() {
     else localStorage.removeItem('driver-name');
   }
 
+  const {
+    mode, passcode, playerCount, error, alert, remoteTotalLaps, isRaining,
+    chatMessages, playerList, raceSettings, remoteBotSpawnCount, remotePlayersRef, punishmentQueueRef, teleportQueueRef,
+    createRoom, joinRoom, leaveRoom, sendUpdate, sendStartRace, sendSpawnBot, adminAction, sendGlobalAction, sendTeleportAll, sendChatMessage,
+  } = useMultiplayer();
+
   const spawnBotRef = useRef(0);
   const [botCount, setBotCount] = useState(AI_COUNT);
   function handleSpawnBot() {
@@ -58,12 +64,6 @@ export function Game() {
     const q = botPunishmentQueuesRef.current[botIdx];
     if (q) q.push(action);
   }, []);
-
-  const {
-    mode, passcode, playerCount, error, alert, remoteTotalLaps, isRaining,
-    chatMessages, playerList, raceSettings, remoteBotSpawnCount, remotePlayersRef, punishmentQueueRef, teleportQueueRef,
-    createRoom, joinRoom, leaveRoom, sendUpdate, sendStartRace, sendSpawnBot, adminAction, sendGlobalAction, sendTeleportAll, sendChatMessage,
-  } = useMultiplayer();
 
   const initialBotCountRef = useRef<number | undefined>(undefined);
 

@@ -149,7 +149,12 @@ function resolveWallCollision(car: CarState, skipInner = false): boolean {
     return true;
   }
 
-  if (!skipInner) {
+  // Pit road gates — openings in the inner wall that allow entry/exit to pit lane
+  const inPitGate = car.x > 205 && car.x < 255 && (
+    (car.z > 36 && car.z < 62) || (car.z > -62 && car.z < -36)
+  );
+
+  if (!skipInner && !inPitGate) {
     const innerVal = (car.x / TRACK.innerA) ** 2 + (car.z / TRACK.innerB) ** 2;
     if (innerVal <= 1.0) {
       const phi = Math.atan2(-car.z / TRACK.innerB, car.x / TRACK.innerA);
@@ -698,13 +703,22 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
       wrongWayTimerRef.current = Math.max(0, wrongWayTimerRef.current - dt * 4);
     }
 
-    // Pit stop — race mode only, drive into yellow pit area and hold for 3 s to repair
+    // Pit stop — race mode only, drive into pit road (inside front straight) to repair
     if (gameMode === 'race' && !raceOverRef.current) {
-      const inPit = player.x >= 240 && player.x <= 278 && Math.abs(player.z) <= 28;
+      // Inner concrete pit wall — hard stop at x=192 so cars don't drive into the infield
+      if (player.x < 192 && Math.abs(player.z) < 60) {
+        player.x = 192;
+        const vx = Math.sin(player.heading) * player.speed;
+        if (vx < 0) player.speed *= 0.3;
+      }
+      // Speed limiter for the entire pit lane corridor
+      const inPitLane = player.x < 234 && player.x > 190 && Math.abs(player.z) < 62;
+      if (inPitLane) player.speed = Math.min(player.speed, 25);
+      // Pit stall zone — hold here to receive service
+      const inPit = player.x > 193 && player.x < 232 && Math.abs(player.z) < 38;
       if (inPit && player.damage > 0) {
         if (pitStopTimerRef.current < 0) pitStopTimerRef.current = 0;
         pitStopTimerRef.current += dt;
-        player.speed = Math.min(player.speed, 18); // pit-lane speed limiter
         if (pitStopTimerRef.current >= 3.0) {
           player.damage = 0;
           nitroFuelRef.current = 1;
@@ -712,7 +726,6 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
           ttsSpeak('Pit stop complete! Car repaired and nitro refilled!');
         }
       } else if (inPit) {
-        player.speed = Math.min(player.speed, 18);
         pitStopTimerRef.current = -1;
       } else {
         pitStopTimerRef.current = -1;
@@ -1479,24 +1492,72 @@ export function Scene({ onUiUpdate, remotePlayersRef, punishmentQueueRef, telepo
         </points>
       )}
 
-      {/* Pit stop lane — race mode only */}
+      {/* Pit road — proper infield pit lane parallel to front straight */}
       {gameMode === 'race' && (
         <>
-          <mesh position={[259, 0.12, 0]}>
-            <boxGeometry args={[20, 0.08, 46]} />
-            <meshStandardMaterial color="#FFCC00" />
+          {/* Main pit road surface — concrete gray strip inside inner wall */}
+          <mesh position={[210, 0.06, 0]}>
+            <boxGeometry args={[36, 0.12, 110]} />
+            <meshStandardMaterial color="#808080" />
           </mesh>
-          <mesh position={[259, 0.19, -23]}>
-            <boxGeometry args={[20, 0.04, 0.6]} />
+
+          {/* Pit road outer white boundary line (track-side edge) */}
+          <mesh position={[228, 0.14, 0]}>
+            <boxGeometry args={[0.6, 0.05, 76]} />
             <meshStandardMaterial color="#ffffff" />
           </mesh>
-          <mesh position={[259, 0.19, 23]}>
-            <boxGeometry args={[20, 0.04, 0.6]} />
+
+          {/* Pit stall painted zone — yellow */}
+          <mesh position={[210, 0.13, 0]}>
+            <boxGeometry args={[34, 0.04, 76]} />
+            <meshStandardMaterial color="#FFCC00" transparent opacity={0.55} />
+          </mesh>
+
+          {/* Active service box — red center zone where repair triggers */}
+          <mesh position={[210, 0.14, 0]}>
+            <boxGeometry args={[32, 0.03, 40]} />
+            <meshStandardMaterial color="#CC2200" transparent opacity={0.5} />
+          </mesh>
+
+          {/* Pit stall divider lines */}
+          {[-30, -15, 0, 15, 30].map(z => (
+            <mesh key={`stall-${z}`} position={[210, 0.15, z]}>
+              <boxGeometry args={[34, 0.04, 0.5]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+          ))}
+
+          {/* Inner concrete pit wall — solid barrier at infield edge */}
+          <mesh position={[192, 1.5, 0]}>
+            <boxGeometry args={[2, 3, 114]} />
+            <meshStandardMaterial color="#cccccc" />
+          </mesh>
+          {/* Pit wall cap */}
+          <mesh position={[192, 3.1, 0]}>
+            <boxGeometry args={[2.6, 0.5, 114]} />
+            <meshStandardMaterial color="#aaaaaa" />
+          </mesh>
+
+          {/* Pit entry opening blend surface (z≈+49) */}
+          <mesh position={[226, 0.07, 49]}>
+            <boxGeometry args={[16, 0.12, 14]} />
+            <meshStandardMaterial color="#777777" />
+          </mesh>
+          {/* Pit entry white entry line */}
+          <mesh position={[228, 0.16, 42]}>
+            <boxGeometry args={[0.7, 0.06, 1.2]} />
             <meshStandardMaterial color="#ffffff" />
           </mesh>
-          <mesh position={[259, 0.19, 0]}>
-            <boxGeometry args={[3, 0.04, 14]} />
-            <meshStandardMaterial color="#ff4400" />
+
+          {/* Pit exit opening blend surface (z≈-49) */}
+          <mesh position={[226, 0.07, -49]}>
+            <boxGeometry args={[16, 0.12, 14]} />
+            <meshStandardMaterial color="#777777" />
+          </mesh>
+          {/* Pit exit white exit line */}
+          <mesh position={[228, 0.16, -42]}>
+            <boxGeometry args={[0.7, 0.06, 1.2]} />
+            <meshStandardMaterial color="#ffffff" />
           </mesh>
         </>
       )}
