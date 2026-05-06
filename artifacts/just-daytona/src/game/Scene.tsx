@@ -151,7 +151,8 @@ function resolveWallCollision(car: CarState, skipInner = false): boolean {
 
   // Pit road: open the inner wall for the entire front-straight region.
   // Matches the visual gap in the inner wall mesh (|z| < 92, positive-x side).
-  const inPitGate = car.x > 0 && Math.abs(car.z) < 92;
+  const insideInner = (car.x / TRACK.innerA) ** 2 + (car.z / TRACK.innerB) ** 2 < 1.0;
+  const inPitGate = car.x > 0 && (Math.abs(car.z) < 92 || insideInner);
 
   if (!skipInner && !inPitGate) {
     const innerVal = (car.x / TRACK.innerA) ** 2 + (car.z / TRACK.innerB) ** 2;
